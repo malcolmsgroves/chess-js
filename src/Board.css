@@ -1,0 +1,21 @@
+div, li, ul {
+  margin: 0;
+  padding: 0;
+}
+
+ul.board {
+  width: 400px;
+  list-style-type: none;
+}
+
+li {
+  height: 50px;
+  width: 50px;
+  font-size: 40px;
+  float: left;
+  text-align: center;
+}
+
+li.dark {
+  background-color: grey;
+}

@@ -5,18 +5,19 @@ const DIAGONAL  = [[1, 1], [1, -1], [-1, 1], [-1, -1]];
 const KNIGHT    = [[1, 2], [1, -2], [-1, 2], [-1, -2],
                   [2, 1], [2, -1], [-2, 1], [-2, -1]];
 function makeMove(start, end, game) {
-  const color = game.board[start.row][start.col];
-  let newGame = JSON.parse(JSON.stringify(game));
+  const color = game.board[start.row][start.col].color;
+  let newGame = JSON.parse(JSON.stringify(game)); // deep copy
   newGame.highlightedMoves = [];
   newGame.board[end.row][end.col] = newGame.board[start.row][start.col];
   newGame.board[start.row][start.col] = null;
   newGame.inCheck = isCheck(color, newGame);
+  newGame.turn = (newGame.turn === COLORS.BLACK) ? COLORS.WHITE : COLORS.BLACK;
   return newGame;
 }
 
 function possibleMoves(start, game) {
   const piece = game.board[start.row][start.col];
-  if(piece === null) return [];
+  if(piece === null || piece.color !== game.turn) return [];
   let moves = [], opts;
   switch(piece.type) {
     case TYPE.KING:
@@ -48,14 +49,16 @@ function possibleMoves(start, game) {
 }
 
 function isCheck(color, game) {
+  console.log(`${color} here`);
   const opponent = color === COLORS.BLACK ? COLORS.WHITE : COLORS.BLACK;
   let king = null;
 
   for(let r = 0; r < 8; ++r) {
     for(let c = 0; c < 8; ++c) {
       const curr = game.board[r][c];
-      if(curr && curr.type === TYPE.KING) {
+      if(curr !== null && curr.type === TYPE.KING && curr.color === color) {
         king = position(r, c);
+        console.log(king);
         break;
       }
     }
@@ -65,7 +68,7 @@ function isCheck(color, game) {
     for(let c = 0; c < 8; ++c) {
       const pos = position(r, c);
       const piece = game.board[r][c];
-      if(piece !== null && piece.color === opponent && possibleMoves(pos, game).includes(king)) {
+      if(piece !== null && piece.color === opponent && includesMove(king, possibleMoves(pos, game))) {
         return true;
       }
     }
@@ -88,15 +91,17 @@ function legalMoves(start, game) {
 function getMoves(start, game, opts) {
   let moves = [];
   let deltas = [];
-  if(opts.isSquare) deltas.concat(SQUARE);
-  if(opts.isDiagonal) deltas.concat(DIAGONAL);
-  for(let delta in deltas) {
-    let currMove = position(start.row + delta[0], start.col + delta[1]);
+  if(opts.isSquare) deltas = deltas.concat(SQUARE);
+  if(opts.isDiagonal) deltas = deltas.concat(DIAGONAL);
+  for(let i = 0; i < deltas.length; ++i) {
+    let currMove = position(start.row + deltas[i][0], start.col + deltas[i][1]);
     while(onBoard(currMove) && !opts.isStep && game.board[currMove.row][currMove.col] === null) {
       moves.push(currMove);
-      currMove = position(currMove.row + delta[0], currMove.col + delta[1]);
+      currMove = position(currMove.row + deltas[i][0], currMove.col + deltas[i][1]);
     }
-    if(onBoard(currMove) && game.board[currMove.row][currMove.col] !== game.turn) {
+    if(onBoard(currMove) &&
+    (game.board[currMove.row][currMove.col] === null ||
+      game.board[currMove.row][currMove.col].color !== game.turn)) {
       moves.push(currMove);
     }
   }
@@ -105,9 +110,14 @@ function getMoves(start, game, opts) {
 
 function knightMoves(start, game) {
   let moves = [];
-  for(let delta in KNIGHT) {
-    const move = position(start.row + delta[0], start.col + delta[1]);
-    if(onBoard(move) && game.board[move.row][move.col].color !== game.turn) moves.push(move);
+  for(let i = 0; i < KNIGHT.length; ++i) {
+    const move = position(start.row + KNIGHT[i][0], start.col + KNIGHT[i][1]);
+    if(onBoard(move)) {
+      const square = game.board[move.row][move.col];
+      if(square === null || square.color !== game.turn) {
+        moves.push(move);
+      }
+    }
   }
   return moves;
 }
@@ -145,14 +155,11 @@ function onBoard(move) {
 }
 
 function includesMove(move, moves) {
-  console.log(move);
-  console.log(moves);
   for(let i = 0; i < moves.length; ++i) {
     if(move.row === moves[i].row && move.col === moves[i].col) {
       return true;
     }
   }
-  console.log('not okay');
   return false;
 }
 

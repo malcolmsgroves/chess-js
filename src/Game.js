@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import createGame, { position } from './game/pieces';
-import makeMove, { legalMoves } from './game/moves';
+import makeMove, { legalMoves, includesMove } from './game/moves';
 import Board from './Board';
 import './Game.css';
 
@@ -13,14 +13,18 @@ class Game extends Component {
   handleClick(event) {
     const id = parseInt(event.target.id, 10);
     const row = Math.floor(id / 10), col = id % 10;
-    const start = position(row, col);
-    const state = this.state;
-    const moves = legalMoves(start, state);
-
-    this.setState({
-      highlightedMoves: moves,
-    })
-    console.log('done');
+    const pos = position(row, col);
+    if(includesMove(pos, this.state.highlightedMoves)) {
+      const newGame = makeMove(this.state.selectedPosition, pos, this.state);
+      this.setState(newGame);
+    }
+    else {
+      const moves = legalMoves(pos, this.state);
+      this.setState({
+        highlightedMoves: moves,
+        selectedPosition: pos,
+      })
+    }
   }
 
   render() {

@@ -9,7 +9,7 @@ import './Board.css';
 function Board(props) {
 
   const boardElement = props.board.map((row, r) => {
-    let dark = r % 2;
+    let dark = r % 2 === 0;
     const rowElement = row.map((piece, c) => {
       dark = !dark;
       let colorClass;

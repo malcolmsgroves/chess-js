@@ -37,6 +37,7 @@ function createGame() {
     board:              newBoard(),
     turn:               COLORS.WHITE,
     highlightedMoves:   [],
+    selectedPosition:   null,
     inCheck:            false,
   };
 }

@@ -6,10 +6,11 @@ const KNIGHT    = [[1, 2], [1, -2], [-1, 2], [-1, -2],
                   [2, 1], [2, -1], [-2, 1], [-2, -1]];
 function makeMove(start, end, game) {
   const color = game.board[start.row][start.col];
-  let newGame = Object.assign({}, game, { highlightedMoves: [] });
-  newGame.board[end.row][end.col] = game.board[start.row][start.col];
+  let newGame = JSON.parse(JSON.stringify(game));
+  newGame.highlightedMoves = [];
+  newGame.board[end.row][end.col] = newGame.board[start.row][start.col];
   newGame.board[start.row][start.col] = null;
-  newGame.inCheck = isCheck(color, game);
+  newGame.inCheck = isCheck(color, newGame);
   return newGame;
 }
 
@@ -40,25 +41,31 @@ function possibleMoves(start, game) {
     case TYPE.PAWN:
       moves = pawnMoves(start, game);
       break;
+    default: return [];
   }
-  return legalMoves(start, moves, game);
+
+  return moves;
 }
 
 function isCheck(color, game) {
   const opponent = color === COLORS.BLACK ? COLORS.WHITE : COLORS.BLACK;
-  let kingPosition = null;
-  let row = 0, col = 0;
-  while(!kingPosition) {
-    let curr = game.board[row][col];
-    if(curr && curr.type === TYPE.KING) kingPosition = position(row, col);
-    col = Math.floor(col + row / 8);
-    row = (row + 1) % 8;
+  let king = null;
+
+  for(let r = 0; r < 8; ++r) {
+    for(let c = 0; c < 8; ++c) {
+      const curr = game.board[r][c];
+      if(curr && curr.type === TYPE.KING) {
+        king = position(r, c);
+        break;
+      }
+    }
+    if(king) break;
   }
   for(let r = 0; r < 8; ++r) {
     for(let c = 0; c < 8; ++c) {
       const pos = position(r, c);
       const piece = game.board[r][c];
-      if(piece !== null && piece.color === opponent && possibleMoves(pos, game).includes(kingPosition)) {
+      if(piece !== null && piece.color === opponent && possibleMoves(pos, game).includes(king)) {
         return true;
       }
     }
@@ -66,7 +73,9 @@ function isCheck(color, game) {
   return false;
 }
 
-function legalMoves(start, moves, game) {
+function legalMoves(start, game) {
+  const moves = possibleMoves(start, game);
+  if(moves.length === 0) return [];
   let legalMoves = [];
   let color = game.board[start.row][start.col].color;
   for(let i = 0; i < moves.length; ++i) {
@@ -128,7 +137,6 @@ function pawnMoves(start, game) {
   if(left && left.color === opponent) {
     moves.push(position(start.row + delta, start.col - 1));
   }
-  console.log(moves)
   return moves;
 }
 
@@ -136,5 +144,17 @@ function onBoard(move) {
   return move.col >= 0 && move.col < 8 && move.row >= 0 && move.row < 8;
 }
 
+function includesMove(move, moves) {
+  console.log(move);
+  console.log(moves);
+  for(let i = 0; i < moves.length; ++i) {
+    if(move.row === moves[i].row && move.col === moves[i].col) {
+      return true;
+    }
+  }
+  console.log('not okay');
+  return false;
+}
+
 export default makeMove;
-export { possibleMoves };
+export { legalMoves, includesMove };

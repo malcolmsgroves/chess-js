@@ -66,7 +66,6 @@ function newBoard() {
     board[6][i] = piece(TYPE.PAWN, COLORS.WHITE);
   }
   for(let row = 0; row < 8; row += 7) {
-    console.log(row);
     const COLOR = (row === 0) ? COLORS.BLACK : COLORS.WHITE;
     for(let col = 0; col < 8; ++col) {
       board[row][col] = piece(BACK_ROW[col], COLOR);

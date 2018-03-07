@@ -1,16 +1,28 @@
-import React, { Component } from 'react';
-import { pieceToHTML } from './game/pieces';
+import React from 'react';
+import { pieceToHTML, position } from './game/pieces';
+import { includesMove } from './game/moves';
 import './Board.css';
 /*
   Board is a presentation component for the chess board that is responsible
   for rendering the board object from the Game container.
 */
 function Board(props) {
+
   const boardElement = props.board.map((row, r) => {
-    let color = r % 2;
+    let dark = r % 2;
     const rowElement = row.map((piece, c) => {
-      color = !color;
-      return <li  className={ isColored(color) }
+      dark = !dark;
+      let colorClass;
+      if(includesMove(position(r, c), props.highlightedMoves)) {
+        colorClass = "highlight";
+      }
+      else if(dark) {
+        colorClass = "dark";
+      }
+      else {
+        colorClass = "light";
+      }
+      return <li  className={ colorClass }
                   key={`${r}${c}`}
                   id={`${r}${c}`}
                   onClick={props.onClick}>{ pieceToHTML(piece) }</li>
@@ -19,7 +31,5 @@ function Board(props) {
   });
   return <ul className="board">{ boardElement }</ul>;
 }
-
-const isColored = color => color ? 'dark' : 'light';
 
 export default Board;

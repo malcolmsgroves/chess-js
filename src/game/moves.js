@@ -49,7 +49,6 @@ function possibleMoves(start, game) {
 }
 
 function isCheck(color, game) {
-  console.log(`${color} here`);
   const opponent = color === COLORS.BLACK ? COLORS.WHITE : COLORS.BLACK;
   let king = null;
 
@@ -58,12 +57,12 @@ function isCheck(color, game) {
       const curr = game.board[r][c];
       if(curr !== null && curr.type === TYPE.KING && curr.color === color) {
         king = position(r, c);
-        console.log(king);
         break;
       }
     }
     if(king) break;
   }
+  if(!king) return false;
   for(let r = 0; r < 8; ++r) {
     for(let c = 0; c < 8; ++c) {
       const pos = position(r, c);
@@ -164,4 +163,4 @@ function includesMove(move, moves) {
 }
 
 export default makeMove;
-export { legalMoves, includesMove };
+export { legalMoves, includesMove, onBoard, isCheck };

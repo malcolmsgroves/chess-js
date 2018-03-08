@@ -12,16 +12,14 @@ function Board(props) {
     let dark = r % 2 === 0;
     const rowElement = row.map((piece, c) => {
       dark = !dark;
-      let colorClass;
-      if(includesMove(position(r, c), props.highlightedMoves)) {
-        colorClass = "highlight";
-      }
-      else if(dark) {
-        colorClass = "dark";
-      }
-      else {
-        colorClass = "light";
-      }
+      let colorClass = "";
+      if(includesMove(position(r, c), props.highlightedMoves))colorClass += "highlight-";
+      else if(props.selectedPosition &&
+              props.selectedPosition.row === r &&
+              props.selectedPosition.col === c) colorClass += "selected-";
+      if(dark) colorClass += "dark";
+      else colorClass += "light";
+
       return <li  className={ colorClass }
                   key={`${r}${c}`}
                   id={`${r}${c}`}

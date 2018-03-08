@@ -6,6 +6,9 @@ div, li, ul {
 ul.board {
   width: 400px;
   list-style-type: none;
+  margin: 100px auto;
+  border: 50px #758BEF solid;
+  overflow: auto;
 }
 
 li {
@@ -20,6 +23,10 @@ li.dark {
   background-color: grey;
 }
 
-li.highlight {
-  background-color: green;
+li.highlight-light {
+  background-color: #FF8D8D;
+}
+
+li.highlight-dark {
+  background-color: #FF2E2E;
 }

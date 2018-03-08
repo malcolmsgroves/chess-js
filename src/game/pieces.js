@@ -42,6 +42,16 @@ function createGame() {
   };
 }
 
+function blankGameTest() {
+  return {
+    board:              blankBoard(),
+    turn:               COLORS.WHITE,
+    highlightedMoves:   [],
+    selectedPosition:   null,
+    inCheck:            false,
+  };
+}
+
 function piece(type, color) {
   return { type, color }
 }
@@ -55,11 +65,16 @@ function pieceToHTML(piece) {
   return CHESS_HTML[piece.color][piece.type];
 }
 
-function newBoard() {
+function blankBoard() {
   let board = [];
   for(let i = 0; i < 8; ++i) {
     board.push(new Array(8).fill(null));
   }
+  return board;
+}
+
+function newBoard() {
+  let board = blankBoard();
   const BACK_ROW = [TYPE.ROOK, TYPE.KNIGHT, TYPE.BISHOP, TYPE.QUEEN,
                     TYPE.KING, TYPE.BISHOP, TYPE.KNIGHT, TYPE.ROOK];
   for(let i = 0; i < 8; ++i) {
@@ -76,4 +91,4 @@ function newBoard() {
 }
 
 export default createGame;
-export { TYPE, COLORS, pieceToHTML, position };
+export { TYPE, COLORS, pieceToHTML, position, piece, blankGameTest };

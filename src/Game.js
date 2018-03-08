@@ -31,6 +31,7 @@ class Game extends Component {
     return (
       <Board  onClick={this.handleClick}
               board={this.state.board}
+              turn={this.state.turn}
               highlightedMoves={this.state.highlightedMoves}/>
     )
   }

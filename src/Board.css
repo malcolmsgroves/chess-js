@@ -11,6 +11,11 @@ ul.board {
   overflow: auto;
 }
 
+div.game {
+  margin: auto;
+  text-align: center;
+}
+
 li {
   height: 50px;
   width: 50px;

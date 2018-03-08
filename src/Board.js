@@ -27,7 +27,12 @@ function Board(props) {
     });
     return rowElement;
   });
-  return <ul className="board">{ boardElement }</ul>;
+  return (
+    <div className="game">
+      <h1>{`${props.turn}'s turn`}</h1>
+      <ul className="board">{ boardElement }</ul>;
+    </div>
+  )
 }
 
 export default Board;

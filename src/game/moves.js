@@ -5,15 +5,22 @@ const DIAGONAL  = [[1, 1], [1, -1], [-1, 1], [-1, -1]];
 const KNIGHT    = [[1, 2], [1, -2], [-1, 2], [-1, -2],
                   [2, 1], [2, -1], [-2, 1], [-2, -1]];
 function makeMove(start, end, game) {
-  const color = game.board[start.row][start.col].color;
   let newGame = JSON.parse(JSON.stringify(game)); // deep copy
+  const newTurn = newGame.turn === COLORS.BLACK ? COLORS.WHITE : COLORS.BLACK;
   newGame.highlightedMoves = [];
   newGame.board[end.row][end.col] = newGame.board[start.row][start.col];
   newGame.board[start.row][start.col] = null;
-  newGame.inCheck = isCheck(color, newGame);
-  newGame.turn = (newGame.turn === COLORS.BLACK) ? COLORS.WHITE : COLORS.BLACK;
+
+  // check for check first, otherwise possible moves is an empty array because
+  // it is not the opponents turn
+  newGame.inCheck = isCheck(newTurn, newGame);
+  newGame.checkMate = newGame.inCheck && isCheckMate(newTurn, newGame);
+  newGame.turn = newTurn;
+  console.log(newGame.inCheck);
   return newGame;
 }
+
+
 
 function possibleMoves(start, game) {
   const piece = game.board[start.row][start.col];
@@ -68,7 +75,22 @@ function isCheck(color, game) {
       const pos = position(r, c);
       const piece = game.board[r][c];
       if(piece !== null && piece.color === opponent && includesMove(king, possibleMoves(pos, game))) {
+        console.log("check");
         return true;
+      }
+    }
+  }
+  return false;
+}
+
+function isCheckMate(color, game) {
+  for(let r = 0; r < 8; ++r) {
+    for(let c = 0; c < 8; ++c) {
+      const pos = position(r, c);
+      const piece = game.board[r][c];
+      if(piece !== null && piece.color === color) {
+        const moves = possibleMoves(pos, game);
+        if(moves.length > 0) return true;
       }
     }
   }

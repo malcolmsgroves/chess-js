@@ -27,9 +27,24 @@ function Board(props) {
     });
     return rowElement;
   });
+
+  const headerElement = (() => {
+    console.log('here');
+    console.log(props.inCheck);
+    const turn = props.turn === "BLACK" ? "Black" : "White";
+    const opponent = props.turn === "BLACK" ? "White" : "Black";
+    if(props.checkMate) {
+      return <h3>{`Checkmate – ${opponent} wins!`}</h3>
+    }
+    const checkString = props.inCheck ? "– check" : "";
+    return (
+      <h3>{`${turn}'s turn ${checkString}`}</h3>
+    )
+  })();
+
   return (
     <div className="game">
-      <h1>{`${props.turn}'s turn`}</h1>
+      { headerElement }
       <ul className="board">{ boardElement }</ul>;
     </div>
   )

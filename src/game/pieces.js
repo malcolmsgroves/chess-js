@@ -39,6 +39,7 @@ function createGame() {
     highlightedMoves:   [],
     selectedPosition:   null,
     inCheck:            false,
+    checkMate:          false,
   };
 }
 
@@ -49,6 +50,7 @@ function blankGameTest() {
     highlightedMoves:   [],
     selectedPosition:   null,
     inCheck:            false,
+    checkMate:          false,
   };
 }
 

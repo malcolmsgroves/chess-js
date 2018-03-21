@@ -16,7 +16,6 @@ function makeMove(start, end, game) {
   newGame.inCheck = isCheck(newTurn, newGame);
   newGame.checkMate = newGame.inCheck && isCheckMate(newTurn, newGame);
   newGame.turn = newTurn;
-  console.log(newGame.inCheck);
   return newGame;
 }
 
@@ -75,7 +74,6 @@ function isCheck(color, game) {
       const pos = position(r, c);
       const piece = game.board[r][c];
       if(piece !== null && piece.color === opponent && includesMove(king, possibleMoves(pos, game))) {
-        console.log("check");
         return true;
       }
     }

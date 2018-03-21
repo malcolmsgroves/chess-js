@@ -1,4 +1,4 @@
-import makeMove, { legalMoves, includesMove, onBoard, isCheck } from './moves';
+import makeMove, { legalMoves, includesMove, onBoard, isCheck, isCheckMate } from './moves';
 import { blankGameTest, piece, COLORS, TYPE, position} from './pieces';
 
 it('can tell if a move is included in an array', () => {
@@ -38,6 +38,18 @@ it('detects check', () => {
   game.board[0][4] = whiteKing;
   expect(isCheck(COLORS.BLACK, game)).toBeTruthy();
   expect(isCheck(COLORS.WHITE, game)).not.toBeTruthy();
+})
+
+if('detects checkmate', () => {
+  let game = blankGameTest();
+  const whiteKing = piece(TYPE.KING, COLORS.WHITE);
+  const blackKing = piece(TYPE.KING, COLORS.BLACK);
+  const whiteRook = piece(TYPE.ROOK, COLORS.WHITE);
+  game.board[3][5] = whiteKing;
+  game.board[3][7] = blackKing;
+  game.board[7][7] = whiteRook;
+  expect(isCheckMate(COLORS.BLACK, game)).toBeTruthy();
+  expect(isCheckMate(COLORS.WHITE, game)).not.toBeTruthy();
 })
 
 it('gets pawn moves', () => {

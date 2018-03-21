@@ -32,7 +32,9 @@ class Game extends Component {
       <Board  onClick={this.handleClick}
               board={this.state.board}
               turn={this.state.turn}
-              highlightedMoves={this.state.highlightedMoves}/>
+              highlightedMoves={this.state.highlightedMoves}
+              inCheck={this.state.inCheck}
+              checkMate={this.state.checkMate}/>
     )
   }
 }

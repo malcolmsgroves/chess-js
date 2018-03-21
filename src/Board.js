@@ -30,7 +30,7 @@ function Board(props) {
 
   const headerElement = (() => {
     console.log('here');
-    console.log(props.inCheck);
+    console.log(props);
     const turn = props.turn === "BLACK" ? "Black" : "White";
     const opponent = props.turn === "BLACK" ? "White" : "Black";
     if(props.checkMate) {

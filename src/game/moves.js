@@ -112,7 +112,6 @@ function nonCheckMoves(start, game) {
   const color = game.board[start.row][start.col].color;
   for(let i = 0; i < moves.length; ++i) {
     let newGame = makeMoveHelper(start, moves[i], game); ///////////
-    newGame.turn = color === COLORS.BLACK ? COLORS.WHITE : COLORS.BLACK;
     if(!isCheck(color, newGame)) noCheck.push(moves[i]);
   }
   return noCheck;
@@ -141,11 +140,12 @@ function getMoves(start, game, opts) {
 
 function knightMoves(start, game) {
   let moves = [];
+  const color = game.board[start.row][start.col].color;
   for(let i = 0; i < KNIGHT.length; ++i) {
     const move = position(start.row + KNIGHT[i][0], start.col + KNIGHT[i][1]);
     if(onBoard(move)) {
       const square = game.board[move.row][move.col];
-      if(square === null || square.color !== game.turn) {
+      if(square === null || square.color !== color) {
         moves.push(move);
       }
     }
@@ -155,7 +155,8 @@ function knightMoves(start, game) {
 
 function pawnMoves(start, game) {
   const pawn = game.board[start.row][start.col];
-  const opponent = game.turn === COLORS.BLACK ? COLORS.WHITE : COLORS.BLACK;
+  const color = game.board[start.row][start.col].color;
+  const opponent = color === COLORS.BLACK ? COLORS.WHITE : COLORS.BLACK;
   let moves = [];
   let delta = 1;
   let unmoved = start.row === 1;

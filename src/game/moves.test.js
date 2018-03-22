@@ -1,4 +1,5 @@
-import makeMove, { legalMoves, includesMove, onBoard, isCheck, isCheckMate } from './moves';
+import makeMove, { legalMoves, includesMove, onBoard, isCheck, isCheckMate,
+                   nonCheckMoves, findKing, possibleMoves } from './moves';
 import { blankGameTest, piece, COLORS, TYPE, position} from './pieces';
 
 it('can tell if a move is included in an array', () => {
@@ -38,9 +39,10 @@ it('detects check', () => {
   game.board[0][4] = whiteKing;
   expect(isCheck(COLORS.BLACK, game)).toBeTruthy();
   expect(isCheck(COLORS.WHITE, game)).not.toBeTruthy();
+  expect(isCheckMate(COLORS.BLACK, game)).not.toBeTruthy();
 })
 
-if('detects checkmate', () => {
+it('detects checkmate', () => {
   let game = blankGameTest();
   const whiteKing = piece(TYPE.KING, COLORS.WHITE);
   const blackKing = piece(TYPE.KING, COLORS.BLACK);
@@ -48,8 +50,24 @@ if('detects checkmate', () => {
   game.board[3][5] = whiteKing;
   game.board[3][7] = blackKing;
   game.board[7][7] = whiteRook;
-  expect(isCheckMate(COLORS.BLACK, game)).toBeTruthy();
   expect(isCheckMate(COLORS.WHITE, game)).not.toBeTruthy();
+  expect(isCheckMate(COLORS.BLACK, game)).toBeTruthy();
+})
+
+it('updates game after move', () => {
+  let game = blankGameTest();
+  const whiteKing = piece(TYPE.KING, COLORS.WHITE);
+  const blackKing = piece(TYPE.KING, COLORS.BLACK);
+  const whiteRook = piece(TYPE.ROOK, COLORS.WHITE);
+  game.board[3][4] = whiteKing;
+  game.board[3][7] = blackKing;
+  game.board[7][7] = whiteRook;
+  const start = position(3, 4);
+  const end = position(3, 5);
+  const newGame = makeMove(start, end, game);
+  expect(newGame.turn).toEqual(COLORS.BLACK);
+  expect(newGame.inCheck).toBeTruthy();
+  expect(newGame.checkMate).toBeTruthy();
 })
 
 it('gets pawn moves', () => {
@@ -89,4 +107,12 @@ it('gets queen moves', () => {
   expect(includesMove(moveFalse, moves)).not.toBeTruthy();
   game.turn = COLORS.BLACK;
   expect(legalMoves(pos, game)).toHaveLength(0);
+})
+
+it('finds the king', () => {
+  let game = blankGameTest();
+  const blackKing = piece(TYPE.KING, COLORS.BLACK);
+  const pos = position(4, 5);
+  game.board[4][5] = blackKing;
+  expect(findKing(COLORS.BLACK, game)).toEqual(pos);
 })

@@ -4,26 +4,25 @@ const SQUARE    = [[0, 1], [0, -1], [1, 0], [-1, 0]];
 const DIAGONAL  = [[1, 1], [1, -1], [-1, 1], [-1, -1]];
 const KNIGHT    = [[1, 2], [1, -2], [-1, 2], [-1, -2],
                   [2, 1], [2, -1], [-2, 1], [-2, -1]];
-function makeMove(start, end, game) {
+
+function makeMoveHelper(start, end, game) {
   let newGame = JSON.parse(JSON.stringify(game)); // deep copy
-  const newTurn = newGame.turn === COLORS.BLACK ? COLORS.WHITE : COLORS.BLACK;
-  newGame.highlightedMoves = [];
   newGame.board[end.row][end.col] = newGame.board[start.row][start.col];
   newGame.board[start.row][start.col] = null;
-
-  // check for check first, otherwise possible moves is an empty array because
-  // it is not the opponents turn
-  newGame.inCheck = isCheck(newTurn, newGame);
-  newGame.checkMate = newGame.inCheck && isCheckMate(newTurn, newGame);
-  newGame.turn = newTurn;
+  newGame.turn = newGame.turn === COLORS.BLACK ? COLORS.WHITE : COLORS.BLACK;
+  return newGame;
+}
+function makeMove(start, end, game) {
+  let newGame = makeMoveHelper(start, end, game);
+  newGame.highlightedMoves = [];
+  newGame.inCheck = isCheck(newGame.turn, newGame);
+  newGame.checkMate = newGame.inCheck && isCheckMate(newGame.turn, newGame); ////////////
   return newGame;
 }
 
-
-
 function possibleMoves(start, game) {
   const piece = game.board[start.row][start.col];
-  if(piece === null || piece.color !== game.turn) return [];
+  if(piece === null) return [];
   let moves = [], opts;
   switch(piece.type) {
     case TYPE.KING:
@@ -54,10 +53,8 @@ function possibleMoves(start, game) {
   return moves;
 }
 
-function isCheck(color, game) {
-  const opponent = color === COLORS.BLACK ? COLORS.WHITE : COLORS.BLACK;
+function findKing(color, game) {
   let king = null;
-
   for(let r = 0; r < 8; ++r) {
     for(let c = 0; c < 8; ++c) {
       const curr = game.board[r][c];
@@ -68,7 +65,14 @@ function isCheck(color, game) {
     }
     if(king) break;
   }
-  if(!king) return false;
+  return king;
+}
+
+function isCheck(color, game) {
+  const opponent = color === COLORS.BLACK ? COLORS.WHITE : COLORS.BLACK;
+  const king = findKing(color, game);
+  if(king === null) return false;
+
   for(let r = 0; r < 8; ++r) {
     for(let c = 0; c < 8; ++c) {
       const pos = position(r, c);
@@ -87,29 +91,37 @@ function isCheckMate(color, game) {
       const pos = position(r, c);
       const piece = game.board[r][c];
       if(piece !== null && piece.color === color) {
-        const moves = possibleMoves(pos, game);
-        if(moves.length > 0) return true;
+        const moves = nonCheckMoves(pos, game); /////////////
+        if(moves.length > 0) return false;
       }
     }
   }
-  return false;
+  return true;
 }
 
 function legalMoves(start, game) {
+  const piece = game.board[start.row][start.col];
+  if(piece === null || piece.color !== game.turn) return [];
+  return nonCheckMoves(start, game);
+}
+
+function nonCheckMoves(start, game) {
   const moves = possibleMoves(start, game);
   if(moves.length === 0) return [];
-  let legalMoves = [];
-  let color = game.board[start.row][start.col].color;
+  let noCheck = [];
+  const color = game.board[start.row][start.col].color;
   for(let i = 0; i < moves.length; ++i) {
-    let newGame = makeMove(start, moves[i], game);
-    if(!isCheck(color, newGame)) legalMoves.push(moves[i]);
+    let newGame = makeMoveHelper(start, moves[i], game); ///////////
+    newGame.turn = color === COLORS.BLACK ? COLORS.WHITE : COLORS.BLACK;
+    if(!isCheck(color, newGame)) noCheck.push(moves[i]);
   }
-  return legalMoves;
+  return noCheck;
 }
 
 function getMoves(start, game, opts) {
   let moves = [];
   let deltas = [];
+  const color = game.board[start.row][start.col].color;
   if(opts.isSquare) deltas = deltas.concat(SQUARE);
   if(opts.isDiagonal) deltas = deltas.concat(DIAGONAL);
   for(let i = 0; i < deltas.length; ++i) {
@@ -120,7 +132,7 @@ function getMoves(start, game, opts) {
     }
     if(onBoard(currMove) &&
     (game.board[currMove.row][currMove.col] === null ||
-      game.board[currMove.row][currMove.col].color !== game.turn)) {
+      game.board[currMove.row][currMove.col].color !== color)) {
       moves.push(currMove);
     }
   }
@@ -183,4 +195,4 @@ function includesMove(move, moves) {
 }
 
 export default makeMove;
-export { legalMoves, includesMove, onBoard, isCheck };
+export { legalMoves, includesMove, onBoard, isCheck, isCheckMate, nonCheckMoves, findKing, possibleMoves };

@@ -42,7 +42,7 @@ function Board(props) {
 
   return (
     <div className="game">
-      { headerElement }
+      <div className="header">{ headerElement }</div>
       <ul className="board">{ boardElement }</ul>;
     </div>
   )

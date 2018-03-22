@@ -3,10 +3,15 @@ div, li, ul {
   padding: 0;
 }
 
+div.header {
+  margin: 30px auto;
+  font-size: 25px;
+}
+
 ul.board {
   width: 400px;
   list-style-type: none;
-  margin: 100px auto;
+  margin: auto;
   border: 50px #758BEF solid;
   overflow: auto;
 }

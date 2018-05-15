@@ -1,6 +1,6 @@
 # Chess in the Browser
 
-A chess game complete with checkmate logic and possible move highlighting. The application is built with **React** components that are separated into stateful container components and dumb presentation components. A suite of **Jest** tests are included for the chess logic and compoenent rendering. Live [here](https://malcolmsgroves.github.io/chess.js)
+A chess game complete with checkmate logic and possible move highlighting. The application is built with **React** components that are separated into stateful container components and dumb presentation components. A suite of **Jest** tests are included for the chess logic and compoenent rendering. Live [here](https://malcolmsgroves.github.io/chess-js/)
 
 ![Chess Board](./public/board.png)
 
